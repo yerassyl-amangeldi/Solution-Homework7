@@ -8,17 +8,24 @@ public class Main {
         season1.addEpisode(new Episode("Episode 3", 1750));
         series.addSeason(season1);
 
-        //watch season in order with for-each
-        System.out.println("Watching season 1 in normal order:");
+        //normal order with for-each
+        System.out.println("Normal order:");
         for (Episode episode : season1) {
             System.out.println(" - " + episode.getTitle());
         }
 
-        //try iterator manually
-        System.out.println("\nUsing explicit iterator:");
-        EpisodeIterator iterator = new SeasonIterator(season1);
-        while (iterator.hasNext()) {
-            System.out.println(" - " + iterator.next().getTitle());
+        //reverse order
+        System.out.println("\nReverse order: ");
+        EpisodeIterator reverseIterator = season1.reverseIterator();
+        while (reverseIterator.hasNext()) {
+            System.out.println(" - " + reverseIterator.next().getTitle());
+        }
+
+        //shuffle order with seed
+        System.out.println("\nShuffle order (seed=42): ");
+        EpisodeIterator shuffleIterator = season1.shuffleIterator(42);
+        while (shuffleIterator.hasNext()) {
+            System.out.println(" - " + shuffleIterator.next().getTitle());
         }
     }
 }
