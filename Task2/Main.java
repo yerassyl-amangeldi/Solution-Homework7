@@ -9,6 +9,7 @@ public class Main {
         Random rand = new Random();
         Aircraft[] aircraft = new Aircraft[10];
 
+
         //spawn 10 random aircraft
         for (int i = 0; i < 10; i++) {
             int fuel = rand.nextInt(100) + 1;

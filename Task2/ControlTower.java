@@ -1,15 +1,15 @@
 import java.util.LinkedList;
-import java.util.Queue;
 
 public class ControlTower implements TowerMediator {
-    private Queue<Aircraft> landingQueue = new LinkedList<>();
-    private Queue<Aircraft> takeoffQueue = new LinkedList<>();
+    private LinkedList<Aircraft> landingQueue = new LinkedList<>();
+    private LinkedList<Aircraft> takeoffQueue = new LinkedList<>();
     private boolean runwayOccupied = false;
     private boolean emergencyMode = false;
 
     @Override
     public void broadcast(String msg, Aircraft sender) {
         System.out.println("Tower: [" + sender.getId() + "] says: " + msg);
+        //echo to all aircraft except sender
         for (Aircraft a : landingQueue) {
             if (a != sender) a.receive(msg);
         }
@@ -19,21 +19,22 @@ public class ControlTower implements TowerMediator {
     }
 
     @Override
-    public boolean requestRunway(Aircraft a) {
+    public boolean requestRunway(Aircraft a, String msg) {
         if (msg.contains("MAYDAY")) {
             handleEmergency(a);
             return true;
         }
         if (msg.contains("LAND")) {
             if (a.getFuelLevel() < 20) {
-                landingQueue.add(0, a); //low fuel priority
-                broadcast("Low fuel priority for " + a.getId(), this);
+                landingQueue.add(0, a); // low fuel priority
+                broadcast("Low fuel priority for " + a.getId(), a);
             } else {
                 landingQueue.add(a);
             }
         } else if (msg.contains("TAKEOFF")) {
             takeoffQueue.add(a);
         }
+        //try to grant runway
         return tryGrantRunway();
     }
 
@@ -42,7 +43,7 @@ public class ControlTower implements TowerMediator {
         runwayOccupied = true;
         landingQueue.clear();
         takeoffQueue.clear();
-        broadcast("MAYDAY! All aircraft hold position", this);
+        broadcast("MAYDAY! All aircraft hold position", a);
         System.out.println("Tower: " + a.getId() + " cleared for emergency landing");
         //mayday gets runway
     }
@@ -69,6 +70,6 @@ public class ControlTower implements TowerMediator {
         runwayOccupied = false;
         emergencyMode = false;
         tryGrantRunway();
-        //reset for next
+        //free runway and check queues
     }
 }
